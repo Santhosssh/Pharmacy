@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+  /* ===== Google Font Look ===== */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ===== Sidebar (Glass Style) ===== */
+  .sidebar {
+    width: 240px;
+    height: 100vh;
+    backdrop-filter: blur(20px);
+    background: rgba(13, 110, 253, 0.9);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 25px 15px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* Sidebar Buttons */
+  .sidebar button {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 12px 15px;
+    margin: 6px 0;
+    text-align: left;
+    border-radius: 10px;
+    transition: 0.3s ease;
+    font-weight: 500;
+  }
+
+  .sidebar button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    padding-left: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .logout-btn {
+    margin-top: auto;
+    background: #ffc107 !important;
+    color: black !important;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  /* ===== Main Content ===== */
+  .main-content {
+    margin-left: 240px;
+    padding: 40px;
+    width: 100%;
+  }
+
+  .dashboard-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 35px;
+  }
+
+  /* ===== Modern Cards ===== */
+  .card {
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    background: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Hover Effect */
+  .card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Left Border Highlight */
+  .order-card {
+    border-left: 6px solid #0d6efd;
+  }
+
+  .stock-card {
+    border-left: 6px solid #198754;
+  }
+
+  .user-card {
+    border-left: 6px solid #dc3545;
+  }
+
+  /* Card Headings */
+  .card h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: #6c757d;
+  }
+
+  /* Card Animation */
+  .card {
+    animation: fadeInUp 0.4s ease-in-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== Modal Styling ===== */
+  .modal-content {
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    border-bottom: none;
+    background: linear-gradient(90deg, #0d6efd, #0a58ca);
+    color: white;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+
+  /* Buttons inside cards */
+  .btn {
+    border-radius: 8px;
+    transition: 0.3s;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+  }
+
+  /* Scrollbar Modern */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #0d6efd;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .small-card {
+    border-radius: 15px;
+    transition: 0.3s;
+  }
+
+  .small-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .stock-header {
+    position: sticky;
+    top: 0;
+    height: 80px;
+    background: white;
+    padding: 15px 10px;
+    z-index: 1000;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .report-card {
+    border-left: 5px solid #0d6efd;
+    transition: 0.3s;
+  }
+
+  .report-card:hover {
+    transform: translateY(-5px);
+  }
+</style>
+
+<body>
+  <div class="sidebar">
+    <h4 class="logo">MedCare</h4>
+
+    <button onclick="openAddForm()">Add Product</button>
+    <button onclick="loadStock()">Stock</button>
+    <button onclick="loadOrders()">Orders</button>
+    <button onclick="loadUsers()">Users</button>
+    <button onclick="loadReports()">Reports</button>
+    <button class="logout-btn" onclick="window.location.href='logout'">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div id="admin-content">
+      <h3 class="dashboard-title">Welcome Admin Dashboard</h3>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="formTitle">Add Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div id="imagePreviewContainer" class="mb-3" style="display:none;">
+          <label class="form-label"><strong>Product Image:</strong></label><br>
+          <img id="imagePreview" src="" style="max-width:150px; max-height:150px; border:1px solid #ccc; padding:4px;">
+        </div>
+
+        <div class="modal-body">
+          <form id="productForm" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <input type="hidden" id="productId" name="productId">
+
+            <input type="text" id="productname" name="productname" class="form-control mb-2" placeholder="Product Name"
+              required>
+
+            <textarea id="description" name="description" class="form-control mb-2" placeholder="Description"
+              required></textarea>
+
+            <input type="text" id="price" name="price" class="form-control mb-2" placeholder="Price" required>
+
+            <select id="product_type" name="product_type" class="form-control mb-3" required>
+              <option value="" disabled selected>Select Product Type</option>
+              <option value="regular">Regular</option>
+              <option value="doctor_prescription">Doctor Prescription</option>
+            </select>
+
+            <input type="file" id="photoInput" name="photo" class="form-control mb-3">
+
+            <button type="submit" id="submitBtn" class="btn btn-success w-100">
+              Add Product
+            </button>
+
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+
+    function openAddForm() {
+      document.getElementById("formTitle").innerText = "Add Product";
+      document.getElementById("productForm").reset();
+      document.getElementById("productId").value = "";
+
+      enableFields();
+
+      document.getElementById("photoInput").style.display = "display";
+      document.getElementById("imagePreviewContainer").style.display = "none";
+
+      document.getElementById("submitBtn").style.display = "block";
+      document.getElementById("submitBtn").innerText = "Add Product";
+
+      new bootstrap.Modal(document.getElementById('productModal')).show();
+    }
+
+    function closeForm() {
+      document.getElementById("productForm").style.display = "none";
+
+      // Reset form
+      document.getElementById("productForm").reset();
+      document.getElementById("productId").value = "";
+
+      // Enable all fields
+      enableFields();
+
+      // Show submit button again
+      document.getElementById("submitBtn").style.display = "inline-block";
+      document.getElementById("submitBtn").innerText = "Add Product";
+    }
+
+    function enableFields() {
+      document.getElementById("productname").disabled = false;
+      document.getElementById("description").disabled = false;
+      document.getElementById("price").disabled = false;
+      document.getElementById("product_type").disabled = false;
+    }
+
+    // ================= CSRF =================
+    function getCSRFToken() {
+      return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken'))
+        ?.split('=')[1];
+    }
+
+    // ================= STOCK =================
+    function loadStock() {
+      fetch('/api/stock/')
+        .then(res => res.json())
+        .then(data => {
+
+          let html = `
+        <div class="stock-header d-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-primary m-0">Stock</h3>
+          <button class="btn btn-success btn-lg" onclick="openAddForm()">
+            Add Product
+          </button>
+        </div>
+
+        <div class="row g-4">   <!-- ROW START -->
+      `;
+
+          data.forEach(item => {
+            html += `
+          <div class="col-md-4 col-sm-6">   <!-- COLUMN -->
+            <div class="card small-card h-100 shadow-sm p-3">
+
+              <h6>ID: ${item.id}</h6>
+
+              ${item.photo ? `
+                <div class="text-center mb-2">
+                  <img src="${item.photo}" 
+                       style="width:100%; height:150px; object-fit:cover; border-radius:8px;">
+                </div>
+              ` : ''}
+
+              <h5 class="fw-bold">${item.productname}</h5>
+              <p class="small text-muted">${item.description}</p>
+
+              <strong class="text-success">₹${item.price}</strong>
+              <p class="small">${item.product_type}</p>
+
+              <div class="mt-2">
+                <button class="btn btn-warning btn-sm" onclick="editProduct(${item.id})">Update</button>
+                <button class="btn btn-info btn-sm" onclick="viewProduct(${item.id})">View</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct(${item.id})">Delete</button>
+              </div>
+
+            </div>
+          </div>
+        `;
+          });
+
+          html += `</div>`;   // ROW END
+
+          document.getElementById("admin-content").innerHTML = html;
+        });
+    }
+    // ================= ORDERS =================
+    function loadOrders() {
+      fetch('/api/orders/')
+        .then(res => res.json())
+        .then(data => {
+
+          let html = `
+        <div class="stock-header d-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-primary m-0">Orders</h3>
+        </div>
+
+        <div class="row g-4">   <!-- ROW START -->
+      `;
+
+          data.forEach(order => {
+
+            html += `
+          <div class="col-lg-4 col-md-6">   <!-- COLUMN -->
+            <div class="card small-card shadow-sm h-100">
+              <div class="card-body">
+
+                <ul class="list-unstyled mb-3">
+                  <li><strong>Order ID:</strong> ${order.id}</li>
+                  <li><strong>Product:</strong> ${order.productname}</li>
+                  <li><strong>Quantity:</strong> ${order.quantity}</li>
+                  <li><strong>Name:</strong> ${order.name}</li>
+                  <li><strong>User ID:</strong> ${order.user_id}</li>
+                  <li><strong>Mobile:</strong> ${order.mobile}</li>
+                  <li><strong>Address:</strong> ${order.address}</li>
+                  <li><strong>Pincode:</strong> ${order.pincode}</li>
+                  <li><strong>Product Type:</strong> ${order.product_type}</li>
+                  <li>
+                    <strong>Status:</strong> 
+                    <span class="badge bg-info">${order.status}</span>
+                  </li>
+                  <li><strong>Order Date:</strong> ${order.orderdate}</li>
+                </ul>
+
+                ${order.prescription ? `
+                  <div class="mb-3 text-center">
+                    <strong>Prescription:</strong><br>
+                    <img src="${order.prescription}" 
+                         style="width:100%; max-height:150px; object-fit:cover; border-radius:6px; border:1px solid #ccc;">
+                  </div>
+                ` : `<p><strong>Prescription:</strong> None</p>`}
+
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                  <label class="fw-bold">Status:</label>
+
+                  <select id="status-${order.id}" class="form-select form-select-sm w-auto">
+                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+
+                  <button class="btn btn-outline-success btn-sm"
+                    onclick="updateOrderStatus(${order.id})">
+                    Update
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        `;
+          });
+
+          html += `</div>`;   // ROW END
+
+          document.getElementById("admin-content").innerHTML = html;
+        });
+    }
+    function updateOrderStatus(orderId) {
+
+      const newStatus = document.getElementById(`status-${orderId}`).value;
+
+      fetch(`/update-status/${orderId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+          status: newStatus
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showMessage("Order status updated!", "success");
+            loadOrders();
+          } else {
+            showMessage("Update failed!", "danger");
+          }
+        });
+    }
+
+    // ================= USERS =================
+    function loadUsers() {
+      fetch('/api/users/')
+        .then(res => res.json())
+        .then(data => {
+
+          let html = `
+        <div class="stock-header d-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-primary m-0">Users</h3>
+        </div>
+
+        <div class="row g-4">   <!-- ROW START -->
+      `;
+
+          data.forEach(user => {
+
+            html += `
+          <div class="col-lg-4 col-md-6">   <!-- COLUMN -->
+            <div class="card small-card shadow-sm h-100 p-3">
+
+              <p><strong>User ID:</strong> ${user.user_id}</p>
+              <p><strong>Username:</strong> ${user.username}</p>
+             
+              <!-- <p><strong>Password:</strong> ${user.password}</p> -->
+
+              <p><strong>Customer Name:</strong> ${user.customername}</p>
+              <p><strong>Mobile:</strong> ${user.mobile}</p>
+              <p><strong>Address:</strong> ${user.address}</p>
+              <p><strong>Pincode:</strong> ${user.pincode}</p>
+
+            </div>
+          </div>
+        `;
+          });
+
+          html += `</div>`;   // ROW END
+
+          document.getElementById("admin-content").innerHTML = html;
+        });
+    }
+    // ================= REPORTS =================
+    function loadReports() {
+
+      fetch("/api/admin-reports/")
+        .then(res => res.json())
+        .then(data => {
+
+          let html = `
+          <div class="stock-header d-flex justify-content-between align-items-center mb-4">
+          <h3 class="text-primary m-0">User Reports</h3>
+        </div>
+        `;
+
+          if (data.reports.length === 0) {
+            html += "<p>No reports found</p>";
+          }
+
+          data.reports.forEach(report => {
+
+            html += `
+            <div class="card p-3 mb-3 shadow-sm report-card">
+
+                <h5>👤 ${report.name}</h5>
+
+                <p>📞 ${report.mobile}</p>
+                <p>📧 ${report.email}</p>
+
+                <p>📝 ${report.message}</p>
+
+                <small class="text-muted">
+                    User ID: ${report.user_id} |
+                    Date: ${report.date}
+                </small>
+
+            </div>
+            `;
+          });
+
+          document.getElementById("admin-content").innerHTML = html;
+
+        });
+
+    }
+
+    // ================= MESSAGE =================
+    function showMessage(message, type) {
+      const msgDiv = document.createElement("div");
+
+      msgDiv.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+      msgDiv.style.zIndex = "9999";
+      msgDiv.style.minWidth = "300px";
+      msgDiv.innerHTML = message;
+
+      document.body.appendChild(msgDiv);
+
+      setTimeout(() => {
+        msgDiv.remove();
+      }, 2500);
+    }
+
+    function viewProduct(id) {
+      fetch(`/api/stock/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+
+          document.getElementById("formTitle").innerText = "View Product";
+
+          document.getElementById("productId").value = "";
+          document.getElementById("productname").value = data.productname;
+          document.getElementById("description").value = data.description;
+          document.getElementById("price").value = data.price;
+          document.getElementById("product_type").value = data.product_type;
+
+          // Show Image
+          if (data.photo) {
+            document.getElementById("imagePreview").src = data.photo;
+            document.getElementById("imagePreviewContainer").style.display = "block";
+          } else {
+            document.getElementById("imagePreviewContainer").style.display = "none";
+          }
+
+          // Hide submit button
+          document.getElementById("submitBtn").style.display = "none";
+
+          // ✅ Hide file input
+          document.getElementById("photoInput").style.display = "none";
+
+          // Disable fields
+          document.getElementById("productname").disabled = true;
+          document.getElementById("description").disabled = true;
+          document.getElementById("price").disabled = true;
+          document.getElementById("product_type").disabled = true;
+
+          new bootstrap.Modal(document.getElementById('productModal')).show();
+        });
+    }
+
+    document.getElementById("productForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const productId = document.getElementById("productId").value;
+      const formData = new FormData(this);
+
+      let url = "";
+      if (productId) {
+        url = `/api/update-product/${productId}/`;
+      } else {
+        url = `/addproduct/`;
+      }
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          'X-CSRFToken': getCSRFToken()
+        },
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          showMessage("Saved successfully!", "success");
+          loadStock();
+          this.reset();
+
+          document.getElementById("productId").value = "";
+          document.getElementById("submitBtn").innerText = "Add Product";
+          document.getElementById("submitBtn").style.display = "inline-block";
+
+          document.getElementById("productname").disabled = false;
+          document.getElementById("description").disabled = false;
+          document.getElementById("price").disabled = false;
+          document.getElementById("product_type").disabled = false;
+        });
+    });
+
+    function editProduct(id) {
+      fetch(`/api/stock/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+
+          document.getElementById("formTitle").innerText = "Update Product";
+
+          document.getElementById("productId").value = data.id;
+          document.getElementById("productname").value = data.productname;
+          document.getElementById("description").value = data.description;
+          document.getElementById("price").value = data.price;
+          document.getElementById("product_type").value = data.product_type;
+
+          enableFields();
+
+          // ✅ IMPORTANT FIX
+          document.getElementById("photoInput").style.removeProperty("display");
+
+          // Show image preview if exists
+          if (data.photo) {
+            document.getElementById("imagePreview").src = data.photo;
+            document.getElementById("imagePreviewContainer").style.display = "block";
+          } else {
+            document.getElementById("imagePreviewContainer").style.display = "none";
+          }
+
+          document.getElementById("submitBtn").style.display = "block";
+          document.getElementById("submitBtn").innerText = "Update Product";
+
+          new bootstrap.Modal(document.getElementById('productModal')).show();
+        });
+    }
+  </script>
+
+</body>
+
+</html>
