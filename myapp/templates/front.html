@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Auth v2</title>
+
+    <style>
+        :root {
+            --primary: #14b8a6;
+            --primary-dark: #06b6d4;
+            --accent: #ff7f50;
+            --light-bg: #e0f7fa;
+            --soft-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #cceff5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== AUTH BOX ===== */
+
+        .auth-shell {
+            width: 950px;
+            height: 560px;
+            display: flex;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--soft-shadow);
+            background: white;
+        }
+
+        /* LEFT PANEL */
+
+        .info-panel {
+            width: 45%;
+            padding: 70px 50px;
+            background: linear-gradient(160deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-panel h1 {
+            font-size: 38px;
+            margin-bottom: 20px;
+        }
+
+        .info-panel p {
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        /* RIGHT PANEL */
+
+        .form-panel {
+            width: 55%;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* SLIDER */
+
+        .slider {
+            display: flex;
+            width: 200%;
+            height: 100%;
+            transition: 0.7s cubic-bezier(.68, -0.55, .27, 1.55);
+        }
+
+        /* FORM BOX */
+
+        .form-box {
+            width: 50%;
+            padding: 70px 60px;
+        }
+
+        /* TITLE */
+
+        .form-box h2 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-box span {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* INPUT FIELD */
+
+        .field {
+            position: relative;
+            margin-top: 24px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .field label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 6px;
+            color: #999;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* Floating Label */
+
+        .field input:focus+label,
+        .field input:not(:placeholder-shown)+label {
+            top: -10px;
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .field input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+        }
+
+        /* BUTTON */
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(20, 184, 166, 0.35);
+        }
+
+        /* SWITCH LINK */
+
+        .switch {
+            margin-top: 22px;
+            text-align: center;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .switch:hover {
+            color: var(--accent);
+        }
+
+        /* MOBILE RESPONSIVE */
+
+        @media(max-width:900px) {
+            .auth-shell {
+                width: 95%;
+                flex-direction: column;
+                height: auto;
+            }
+
+            .info-panel {
+                width: 100%;
+                padding: 40px;
+                text-align: center;
+            }
+
+            .form-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-shell">
+
+        <!-- LEFT INFO -->
+        <div class="info-panel">
+            <h1>Welcome to Our Pharmacy</h1>
+            <p>
+                Trusted medications, expert guidance,
+                and caring service for your health and wellness.
+            </p>
+        </div>
+
+
+        <!-- RIGHT FORMS -->
+        <div class="form-panel">
+            <div class="slider" id="slider">
+
+                <!-- LOGIN -->
+                <form class="form-box" action="login" method="POST">
+                    {% csrf_token %}
+                    <h2>Login</h2>
+                    <span> For Access your Account</span>
+
+                    <div class="field">
+                        <input type="text" name="name" required placeholder=" ">
+                        <label>Username</label>
+                    </div>
+
+                    <div class="field">
+                        <input type="password" name="pas" required placeholder=" ">
+                        <label>Password</label>
+                    </div>
+
+                    <button type="submit">Login</button>
+
+                    <div class="switch" onclick="showRegister()">
+                        New here? Create an account →
+                    </div>
+                </form>
+
+                <!-- REGISTER -->
+                <form class="form-box" action="adregister" method="POST">
+                    {% csrf_token %}
+                    <h2>Create Account</h2>
+                    <span>Start in under a minute</span>
+
+                    <div class="field">
+                        <input type="text" name="name" required placeholder=" ">
+                        <label>Username</label>
+                    </div>
+
+                    <div class="field">
+                        <input type="password" name="pas" required placeholder=" ">
+                        <label>Password</label>
+                    </div>
+
+                    <div class="field">
+                        <input type="text" name="mobile" required placeholder=" ">
+                        <label>Mobile Number</label>
+                    </div>
+
+                    <button type="submit">Register</button>
+
+                    <div class="switch" onclick="showLogin()">
+                        ← Already have an account?
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showRegister() {
+            document.getElementById("slider").style.transform = "translateX(-50%)";
+        }
+
+        function showLogin() {
+            document.getElementById("slider").style.transform = "translateX(0)";
+        }
+    </script>
+
+</body>
+
+</html>

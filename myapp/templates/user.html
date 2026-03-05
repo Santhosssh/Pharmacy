@@ -1,0 +1,842 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedCare Pharmacy</title>
+  <link rel="stylesheet" href="{% static 'css/user_style.css' %}">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" onclick="toggleCart()">MedCare Pharmacy <i class="bi bi-cart-fill"></i></a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="home" class="nav-link">Home</a></li>
+        <li class="nav-item"><a onclick="toggleProfile()" class="nav-link">Profile</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="toggleCart()">Cart <i class="bi bi-cart"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" id="ordersLink">Orders</a></li>
+        <li class="nav-item"><a href="logout" class="nav-link">Logout</a></li>
+      </ul>
+
+    </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h2>Your Health, Our Priority</h2>
+    <p>Buy medicines online and book doctor appointments & lab tests</p>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search medicines..." />
+      <button id="searchBtn">Search</button>
+    </div>
+  </section>
+
+
+  <!-- Marquee -->
+  <div class="marquee-container">
+    <div class="marquee">
+      🚚 Free delivery on orders above ₹500! &nbsp;&nbsp;&nbsp;
+      💊 Get 10% off on your first order! &nbsp;&nbsp;&nbsp;
+      🩺 Book doctor appointments and lab tests online! &nbsp;&nbsp;&nbsp;
+      🧴 Seasonal sale: Up to 20% off on skincare products! &nbsp;&nbsp;&nbsp;
+      🌿 Herbal supplements now available with special discounts! &nbsp;&nbsp;&nbsp;
+      🏥 24/7 customer support for all your health needs! &nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+
+
+  <!-- Search Results -->
+  <div id="searchResults" style="margin-top:20px;"></div>
+
+  <section class="section">
+    <h2>Shop By Category</h2>
+    <div class="features">
+      <div class="feature">💊 Tablets</div>
+      <div class="feature">🧴 Personal Care</div>
+      <div class="feature">🩺 Medical Devices</div>
+      <div class="feature">🌿 Herbal</div>
+    </div>
+  </section>
+
+  <!-- Popular Medicines -->
+  <section class="section">
+    <h2>Popular Medicines</h2>
+    <div class="products">
+      {% for i in res %}
+      <div class="card">
+        {% if i.photo %}
+        <img src="{{ i.photo.url }}" alt="{{ i.productname }}">
+        {% else %}
+        <img src="https://via.placeholder.com/100" alt="No Image">
+        {% endif %}
+        <h3>{{ i.productname }}</h3>
+        <p class="price">₹{{ i.price }}</p>
+        <p class="description">{{ i.description }}</p>
+        <h6>{{i.product_type}}</h6>
+        <button class="add-btn" data-id="{{ i.id }}" data-name="{{ i.productname|escapejs }}" data-price="{{ i.price }}"
+          data-type="{{ i.product_type|lower }}">
+          Add to Cart
+        </button>
+
+        <button onclick="handleBuyNow('{{ i.id }}','{{ i.productname }}','{{ i.price }}','{{ i.product_type }}')">
+          Buy Now
+        </button>
+
+      </div>
+      {% empty %}
+      <p class="text-muted">No products available</p>
+      {% endfor %}
+    </div>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
+
+    <section
+      style="background: linear-gradient(90deg, #14b8a6, #06b6d4); padding:50px; text-align:center; color:white;">
+      <h3>Consult Certified Doctors Online</h3>
+      <p>Get expert medical advice from licensed professionals</p>
+      <button style="background:#ff7f50; padding:12px 25px; border:none; border-radius:5px; font-weight:bold;">
+        Book Appointment
+      </button>
+    </section>
+    <br>
+    <br>
+    <hr>
+  </section>
+
+
+  <!-- Features -->
+  <section class="section">
+    <h2>Why Choose Us</h2>
+    <div class="features">
+      <div class="feature">✔ Genuine Medicines</div>
+      <div class="feature">🚚 Fast Delivery</div>
+      <div class="feature">💳 Secure Payment</div>
+      <div class="feature">📞 24/7 Support</div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button class="btn btn-danger btn-lg" onclick="openReportForm()">
+      📢 Report Issue
+    </button>
+    <br>
+  </section>
+
+  <p id="successMsg" style="display:none;
+          text-align:center;
+          font-weight:bold;
+          margin:10px 0;">
+    ✅ Report submitted successfully!
+  </p>
+
+  <footer>
+    <div style="display:flex; justify-content:space-around; flex-wrap:wrap;">
+      <div>
+        <h5>MedCare Pharmacy</h5>
+        <p>Your trusted online pharmacy.</p>
+      </div>
+      <div>
+        <h6>Quick Links</h6>
+        <p>Home</p>
+        <p>Orders</p>
+        <p>Profile</p>
+      </div>
+      <div>
+        <h6>Contact</h6>
+        <p>📞 +91 9566311727</p>
+        <p>✉ support@medcare.com</p>
+      </div>
+    </div>
+    <hr style="background:white;">
+    <p>© 2026 MedCare Pharmacy. All rights reserved.</p>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toast-msg">Item added to cart!</div>
+        <button type="button" class="btn-close toast-close-btn me-2 m-auto" data-bs-dismiss="toast">&times;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h4>Your Cart</h4>
+      <button class="btn btn-danger btn-sm" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <h5>Total: ₹<span id="cartTotal">0</span></h5>
+      <button onclick="checkoutCart(
+    '{{ i.id }}',
+    '{{ i.productname|escapejs }}',
+    '{{ i.price }}',
+    '{{ i.product_type|lower|escapejs }}')">
+        Buy Now
+      </button>
+    </div>
+  </div>
+
+
+  <div id="profileSidebar" class="profile-sidebar">
+    <div class="cart-header">
+      <h5>My Profile</h5>
+      <button type="button" class="btn btn-danger btn-sm" onclick="toggleProfile()">&times;</button>
+    </div>
+    <form method="POST" action="{% url 'user_profile' %}">
+      {% csrf_token %}
+      <p>User ID: {{ res1.user_id }}</p>
+      <p>Username:<input type="text" name="username" class="form-control" value="{{ res1.username }}" required></p>
+      <p>Name:<input type="text" name="customername" class="form-control" value="{{ res1.customername }}" required></p>
+      <p>Mobile:<input type="text" name="mobile" class="form-control" value="{{ res1.mobile }}" required></p>
+      <p>Pincode:<input type="text" name="pincode" class="form-control" value="{{ res1.pincode }}" required></p>
+      <p>Address:<input type="text" name="address" class="form-control" value="{{ res1.address }}" required></p>
+      <button type="submit" class="btn btn-success">Save</button>
+    </form>
+  </div>
+
+  <div id="prescriptionModal" class="order-form-overlay" style="display:none;">
+    <div class="order-form">
+      <h3>Upload Doctor Prescription</h3>
+
+      <form method="post" action="{% url 'place_prescription' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="pres_product_id">
+        <!-- prescription file -->
+        <label>Upload Prescription</label>
+        <input type="file" name="prescription" required>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="closePrescriptionModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Common Order Form Modal -->
+  <div id="orderForm" class="order-form-overlay" style="display:none;">
+    <div class="order-form">
+      <h3>Confirm Order</h3>
+
+      <form method="post" action="{% url 'place_order' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="hidden" name="product_id" id="product_id">
+        <input type="hidden" name="productname" id="order_product_name_input">
+        <input type="hidden" name="product_type" id="product_type_input">
+
+        <p><strong>Product:</strong> <span id="order_product_name"></span></p>
+        <p><strong>Price:</strong> <span id="order_product_price"></span></p>
+
+        <!-- Name -->
+        <div class="mb-2">
+          <label>Full Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <!-- Quantity -->
+        <div class="mb-2">
+          <label>Quantity</label>
+          <input type="number" name="quantity" value="1" min="1" class="form-control" required>
+        </div>
+
+        <!-- Mobile -->
+        <div class="mb-2">
+          <label>Mobile Number</label>
+          <input type="text" name="mobile" maxlength="15" class="form-control" required>
+        </div>
+
+        <!-- Address -->
+        <div class="mb-2">
+          <label>Delivery Address</label>
+          <textarea name="address" class="form-control" required></textarea>
+        </div>
+
+        <!-- Pincode -->
+        <div class="mb-2">
+          <label>Pincode</label>
+          <input type="text" name="pincode" maxlength="10" class="form-control" required>
+        </div>
+
+        <!-- Prescription Field (Hidden by Default) -->
+        <div class="mb-2" id="prescriptionField" style="display:none;">
+          <label>Upload Prescription</label>
+          <input type="file" name="prescription" class="form-control">
+        </div>
+
+
+        <!-- order_mode -->
+        <input type="hidden" name="order_mode" id="order_mode">
+        <input type="hidden" name="cart_data" id="cart_data">
+
+
+        <button type="submit" class="btn btn-success">Place Order</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('orderForm')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Container -->
+  <div class="orders-sidebar" id="ordersSidebar">
+    <div class="orders-header">
+      <h4>Your Orders</h4>
+      <!-- Close button -->
+      <button id="closeOrders">&times;</button>
+    </div>
+    <div class="orders-items" id="ordersList">
+      <!-- Orders will load here via AJAX -->
+    </div>
+  </div>
+
+  <div id="reportModal" class="report-modal">
+    <div class="report-content">
+
+      <span class="close-btn" onclick="closeReportForm()">&times;</span>
+
+      <h4 class="text-center text-danger mb-3">Report / Issue</h4>
+      <input type="hidden" id="reportUserId" value="1">
+
+      <div class="mb-3">
+        <label>Name</label>
+
+        <input type="text" class="form-control" id="reportName" placeholder="Enter your name">
+      </div>
+
+      <div class="mb-3">
+        <label>Mobile No</label>
+        <input type="text" class="form-control" id="reportMobile" placeholder="Enter mobile number">
+      </div>
+
+      <div class="mb-3">
+        <label>Email ID</label>
+        <input type="email" class="form-control" id="reportEmail" placeholder="Enter email">
+      </div>
+
+      <div class="mb-3">
+        <label>Report / Issue</label>
+        <textarea class="form-control" id="reportMessage" rows="4" placeholder="Describe your issue"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-danger w-100" onclick="submitReport()">
+        Submit
+      </button>
+
+    </div>
+  </div>
+  <p id="successMsg" style="display:none;
+          text-align:center;
+          font-weight:bold;
+          margin:10px 0;">
+    ✅ Report submitted successfully!
+  </p>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toast
+    const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+    function showToast(msg) {
+      document.getElementById('toast-msg').innerText = msg;
+      toast.show();
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function toggleProfile() {
+      document.getElementById('profileSidebar').classList.toggle('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const productId = this.dataset.id;
+        const type = this.dataset.type; // get type from button
+
+        fetch("add-to-cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRFToken()
+          },
+          body: "product_id=" + productId + "&quantity=1&product_type=" + type
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === "success") {
+              showToast("Added to cart");
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch(error => {
+            console.error("Error:", error);
+          });
+      });
+    });
+
+    // CSRF Token Function
+    function getCSRFToken() {
+      return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+
+    function handleBuyNow(productId, productName, price) {
+
+      fetch("check-product-type", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": getCSRFToken()
+        },
+        body: "product_id=" + productId
+      })
+        .then(response => response.json())
+        .then(data => {
+
+          if (data.status === "success") {
+
+            // Set form values
+            document.getElementById("product_id").value = productId;
+            document.getElementById("order_product_name").innerText = productName;
+            document.getElementById("order_product_price").innerText = "₹" + price;
+            document.getElementById("order_product_name_input").value = productName;
+            document.getElementById("product_type_input").value = data.product_type;
+
+            // 🔥 Show prescription field only if needed
+            if (data.product_type.toLowerCase().includes("prescription")) {
+              document.getElementById("prescriptionField").style.display = "block";
+              document.querySelector('input[name="prescription"]').required = true;
+            } else {
+              document.getElementById("prescriptionField").style.display = "none";
+              document.querySelector('input[name="prescription"]').required = false;
+            }
+
+            document.getElementById("orderForm").style.display = "flex";
+
+          } else {
+            alert("Product not found");
+          }
+        });
+    }
+
+    function toggleCart() {
+
+      let cartDiv = document.getElementById("cartSidebar");
+      cartDiv.classList.toggle("active");
+
+      if (cartDiv.classList.contains("active")) {
+
+        fetch("/get_cart_items/")
+          .then(response => response.json())
+          .then(data => {
+
+            let cartHTML = "";
+            let total = 0;
+
+            if (!data.cart || data.cart.length === 0) {
+              cartHTML = "<p>Your cart is empty</p>";
+            } else {
+
+              data.cart.forEach(item => {
+
+                let price = parseFloat(item.price) || 0;
+                let quantity = parseInt(item.quantity) || 0;
+                let type = item.product_type || "General";
+
+                total += price * quantity;
+
+                let imgSrc = item.image || "https://via.placeholder.com/60";
+
+                cartHTML += `
+<div class="cart-item">
+
+<img src="${imgSrc}" width="60">
+
+<div class="cart-item-info">
+<h6>${item.product}</h6>
+<p>₹${price} × ${quantity}</p>
+<h6>${item.product_type}</h6>
+<div class="cart-btn-group">
+<button onclick="updateCartQty('${item.cart_id}','increase')">
+➕
+</button>
+
+<button onclick="updateCartQty('${item.cart_id}','decrease')">
+➖
+</button>
+
+<button style="color:red"
+        onclick="deleteCartItem('${item.cart_id}')">
+🗑
+</button>
+
+</div>
+
+</div>
+
+</div>
+`;
+              });
+            }
+
+            document.getElementById("cartItems").innerHTML = cartHTML;
+            document.getElementById("cartTotal").innerText = total;
+          })
+          .catch(error => {
+            console.error("Cart loading failed:", error);
+          });
+
+      }
+    }
+
+    function updateCartQty(cartId, action) {
+
+      if (!cartId || cartId === "undefined") {
+        console.error("Invalid cart id");
+        return;
+      }
+
+      fetch("/update-cart-quantity/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+          cart_id: cartId,
+          action: action
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+
+          if (data.status === "success") {
+            toggleCart();
+          } else {
+            console.error(data.message);
+            alert(data.message || "Update failed");
+          }
+
+        });
+
+    }
+
+    function deleteCartItem(cartId) {
+
+      if (!cartId) return;
+
+      fetch("/delete-cart-item/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+          cart_id: cartId
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+
+          if (data.status === "success") {
+            toggleCart();
+          } else {
+            alert(data.message || "Delete failed");
+          }
+
+        });
+
+    }
+
+    function checkoutCart() {
+
+      fetch("/get_cart_items/")   // ✅ correct URL
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(data => {
+
+          if (!data.cart || data.cart.length === 0) {
+            alert("Your cart is empty");
+            return;
+          }
+
+          let cartHTML = "";
+          let total = 0;
+
+          // ✅ Check prescription items
+          let requiresPrescription = data.cart.some(item =>
+            item.product_type &&
+            item.product_type.toLowerCase().includes("prescription")
+          );
+
+          data.cart.forEach(item => {
+
+            let price = parseFloat(item.price) || 0;
+            let quantity = parseInt(item.quantity) || 0;
+            let type = item.product_type ? item.product_type : "Regular";
+
+            total += price * quantity;
+
+            let imgSrc = item.image ? item.image : "https://via.placeholder.com/50";
+
+            // ✅ IMPORTANT → use backticks ``
+            cartHTML += `
+                <div class="cart-item" style="display:flex; align-items:center; margin-bottom:8px;">
+                    <img src="${imgSrc}" alt="${item.product}" 
+                         style="width:50px; height:50px; margin-right:8px;">
+                    <div>
+                        <strong>${item.product}</strong><br>
+                        Type: ${type}<br>
+                        ₹${price} x ${quantity}
+                    </div>
+                </div>
+            `;
+          });
+
+          // ✅ Insert into order form
+          document.getElementById("order_product_name").innerHTML = cartHTML;
+          document.getElementById("order_product_price").innerText = "₹" + total;
+          document.getElementById("order_mode").value = "cart";
+          document.getElementById("cart_data").value = JSON.stringify(data.cart);
+
+          // ✅ Prescription Field Logic
+          let prescriptionField = document.getElementById("prescriptionField");
+          let prescriptionInput = document.querySelector('input[name="prescription"]');
+
+          if (requiresPrescription) {
+            prescriptionField.style.display = "block";
+            prescriptionInput.required = true;
+            prescriptionInput.value = "";
+          } else {
+            prescriptionField.style.display = "none";
+            prescriptionInput.required = false;
+            prescriptionInput.value = "";
+          }
+
+          // ✅ Show Order Form
+          document.getElementById("orderForm").style.display = "flex";
+
+        })
+        .catch(error => {
+          console.error("Error fetching cart:", error);
+          alert("Something went wrong. Please try again.");
+        });
+    }
+
+    const ordersLink = document.getElementById("ordersLink");
+    const ordersSidebar = document.getElementById("ordersSidebar");
+    const closeOrders = document.getElementById("closeOrders");
+    const ordersList = document.getElementById("ordersList");
+
+    // Open sidebar
+    ordersLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      ordersSidebar.classList.add("open");
+
+      // Load orders via AJAX if not loaded yet
+      if (!ordersSidebar.dataset.loaded) {
+        fetch("{% url 'get_orders_ajax' %}")
+          .then(res => res.json())
+          .then(data => {
+            if (data.orders.length === 0) {
+              ordersList.innerHTML = "<p>No orders found.</p>";
+            } else {
+              let html = "";
+              data.orders.forEach(order => {
+                html += `
+                    <div class="order-card">
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Product:</strong> ${order.productname}</li>
+                            <li><strong>Quantity:</strong> ${order.quantity}</li>
+                            <li><strong>Name:</strong> ${order.name}</li>
+                            <li><strong>Mobile:</strong> ${order.mobile}</li>
+                            <li><strong>Address:</strong> ${order.address}</li>
+                            <li><strong>Pincode:</strong> ${order.pincode}</li>
+                            <li><strong>Prescription:</strong> ${order.prescription ? `<img src="${order.prescription}">` : "None"}</li>
+                            <li><strong>Status:</strong> ${order.status}</li>
+                            <li><strong>Order Date:</strong> ${order.orderdate}</li>
+                        </ul>
+                    </div>`;
+              });
+              ordersList.innerHTML = html;
+            }
+            ordersSidebar.dataset.loaded = "true";
+          })
+          .catch(err => console.error("Error fetching orders:", err));
+      }
+    });
+
+    // Close sidebar when close button clicked
+    closeOrders.addEventListener("click", () => {
+      ordersSidebar.classList.remove("open");
+    });
+
+    // Optional: close sidebar when clicking outside
+    document.addEventListener("click", function (e) {
+      if (!ordersSidebar.contains(e.target) && e.target !== ordersLink) {
+        ordersSidebar.classList.remove("open");
+      }
+    });
+
+    function searchMedicines() {
+      let query = document.getElementById("searchInput").value.trim();
+      const resultsContainer = document.getElementById("searchResults");
+
+      if (query === "") {
+        resultsContainer.innerHTML = "<p>Please enter a medicine name in search .</p>";
+        return;
+      }
+
+      fetch(`/search-medicines/?q=${query}`)
+        .then(res => res.json())
+        .then(data => {
+
+          if (data.results.length === 0) {
+            resultsContainer.innerHTML = "<p class='text-muted'>No products found</p>";
+          } else {
+
+            let html = `<div class="products">`;
+
+            data.results.forEach(product => {
+              html += `
+                <div class="card">
+                    ${product.image
+                  ? `<img src="${product.image}" alt="${product.name}">`
+                  : `<img src="https://via.placeholder.com/100" alt="No Image">`
+                }
+
+                    <h3>${product.name}</h3>
+                    <p class="price">₹${product.price}</p>
+                    <h6>${product.type}</h6>
+
+                    <button class="add-btn"
+                        data-id="${product.id}"
+                        data-name="${product.name}"
+                        data-price="${product.price}"
+                        data-type="${product.type.toLowerCase()}">
+                        Add to Cart
+                    </button>
+
+                    <button onclick="handleBuyNow('${product.id}','${product.name}','${product.price}','${product.type}')">
+                        Buy Now
+                    </button>
+                </div>
+                `;
+            });
+
+            html += `</div>`;
+            resultsContainer.innerHTML = html;
+          }
+        })
+        .catch(err => console.error("Search error:", err));
+    }
+
+    // Button click
+    document.getElementById("searchBtn").addEventListener("click", searchMedicines);
+
+    // Enter key
+    document.getElementById("searchInput").addEventListener("keyup", function (e) {
+      if (e.key === "Enter") {
+        searchMedicines();
+      }
+    });
+
+
+    function submitReport() {
+
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      fetch("/submit-report/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({
+          name: document.getElementById("reportName").value,
+          mobile: document.getElementById("reportMobile").value,
+          email: document.getElementById("reportEmail").value,
+          message: document.getElementById("reportMessage").value
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+
+          const msg = document.getElementById("successMsg");
+
+          if (!msg) {
+            console.error("successMsg element not found");
+            return;
+          }
+
+          if (data.status === "success") {
+
+            // Close modal first
+            closeReportForm();
+
+            const msg = document.getElementById("successMsg");
+
+            msg.innerText = "✅ Report submitted successfully!";
+            msg.style.color = "green";
+            msg.style.display = "block";
+
+            setTimeout(function () {
+              msg.style.display = "none";
+            }, 3000);
+
+          } else {
+
+            msg.innerText = data.message || "Something went wrong!";
+            msg.style.color = "red";
+            msg.style.display = "block";
+          }
+
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
+    }
+    function openReportForm() {
+      document.getElementById("reportModal").style.display = "block";
+    }
+
+    function closeReportForm() {
+      document.getElementById("reportModal").style.display = "none";
+    }
+  </script>
+</body>
+
+</html>
